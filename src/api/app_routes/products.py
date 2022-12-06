@@ -6,9 +6,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 
-apiProduct = Blueprint('apiProduct', __name__)
+apiProduct = Blueprint("apiProduct", __name__)
 
-@apiProduct.route('/products', methods = ['GET'])
+
+@apiProduct.route("/products", methods=["GET"])
 def get_products():
 
     products = Product.query.all()
@@ -16,7 +17,8 @@ def get_products():
 
     return jsonify(products), 200
 
-@apiProduct.route('/product/<product_id>', methods = ['GET'])
+
+@apiProduct.route("/product/<product_id>", methods=["GET"])
 def get_product(product_id):
 
     product = Product.query.get(product_id)
@@ -24,14 +26,15 @@ def get_product(product_id):
     if isinstance(product, Product):
         return jsonify(product.serialize()), 200
     else:
-        return jsonify({"messsage":"product not found"})
+        return jsonify({"messsage": "product not found"})
 
-@apiProduct.route('/product', methods=['POST'])
+
+@apiProduct.route("/product", methods=["POST"])
 def register_product():
 
     product = Product()
     body = request.json
-    
+
     product.product_type = body["product_type"]
     product.picture = body["picture"]
     product.name = body["name"]
@@ -46,21 +49,22 @@ def register_product():
     product.quantity = body["quantity"]
     product.stock = body["stock"]
 
-    try:        
+    try:
         db.session.add(product)
         db.session.commit()
         return jsonify(product.serialize()), 201
     except Exception as error:
         print(error)
         db.session.rollback()
-        return jsonify({"message":"something went wrong registering a new product"}), 400
+        return jsonify({"message": "something went wrong registering a new product"}), 400
 
-@apiProduct.route('/product/<product_id>', methods=['PUT'])
+
+@apiProduct.route("/product/<product_id>", methods=["PUT"])
 def update_product(product_id):
 
     body = request.json
     product = Product.query.get(product_id)
-    
+
     product.product_type = body["product_type"]
     product.picture = body["picture"]
     product.name = body["name"]
@@ -75,16 +79,17 @@ def update_product(product_id):
     product.quantity = body["quantity"]
     product.stock = body["stock"]
 
-    try:        
+    try:
         db.session.add(product)
         db.session.commit()
         return jsonify(product.serialize()), 201
     except Exception as error:
         print(error)
         db.session.rollback()
-        return jsonify({"message":"something went wrong updating this product"}), 400
+        return jsonify({"message": "something went wrong updating this product"}), 400
 
-@apiProduct.route('/product/<product_id>', methods=['DELETE'])
+
+@apiProduct.route("/product/<product_id>", methods=["DELETE"])
 def delete_product(product_id):
 
     product = Product.query.get(product_id)

@@ -2,9 +2,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 class User(db.Model):
-    
-    __tablename__ = 'user'
+
+    __tablename__ = "user"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20), unique=False, nullable=False)
@@ -14,41 +15,38 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
 
     def __repr__(self):
-        return f'<User {self.email}>'
+        return f"<User {self.email}>"
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "last_name": self.last_name,
-            "email": self.email
-        }
+        return {"id": self.id, "name": self.name, "last_name": self.last_name, "email": self.email}
+
 
 class Order(db.Model):
-    
-    __tablename__ = 'order'
+
+    __tablename__ = "order"
 
     id = db.Column(db.Integer, primary_key=True)
     shipping_address = db.Column(db.String(80), nullable=False)
     order_state = db.Column(db.String(80), nullable=False)
-    
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    user = db.relationship("User", backref = "order", lazy = False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    user = db.relationship("User", backref="order", lazy=False)
 
     def __repr__(self):
-        return f'<Order {self.id}>'
+        return f"<Order {self.id}>"
 
     def serialize(self):
         return {
             "id": self.id,
             "shipping_address": self.shipping_address,
             "order_state": self.order_state,
-            "user": self.user.serialize()
+            "user": self.user.serialize(),
         }
 
+
 class Product(db.Model):
-    
-    __tablename__ = 'product'
+
+    __tablename__ = "product"
 
     id = db.Column(db.Integer, primary_key=True)
     product_type = db.Column(db.String(20), unique=False, nullable=False)
@@ -68,17 +66,17 @@ class Product(db.Model):
     stock = db.Column(db.Integer, nullable=False)
 
     def __repr__(self):
-        return f'<Product {self.name}>'
+        return f"<Product {self.name}>"
 
     def detail(self):
-         return {
+        return {
             "id": self.id,
             "picture": self.picture,
             "name": self.name,
             "description": self.description,
             "price": self.price,
-            "quantity": self.quantity
-         }
+            "quantity": self.quantity,
+        }
 
     def serialize(self):
         return {
@@ -95,26 +93,26 @@ class Product(db.Model):
             "presentation": self.presentation,
             "price": self.price,
             "quantity": self.quantity,
-            "stock": self.stock
+            "stock": self.stock,
         }
 
+
 class OrderDetail(db.Model):
-    
-    __tablename__ = 'order_detail'
+
+    __tablename__ = "order_detail"
 
     id = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Float(10), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    
-    order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
+
+    order_id = db.Column(db.Integer, db.ForeignKey("order.id"))
     order = db.relationship(Order, backref="order_detail", lazy=False)
 
-    product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
+    product_id = db.Column(db.Integer, db.ForeignKey("product.id"))
     product = db.relationship(Product, backref="order_detail", lazy=False)
 
-
     def __repr__(self):
-        return f'<OrderDetail {self.id}>'
+        return f"<OrderDetail {self.id}>"
 
     def serialize(self):
         return {
@@ -122,21 +120,17 @@ class OrderDetail(db.Model):
             "price": self.price,
             "quantity": self.quantity,
             "order": self.order.serialize(),
-            "product": self.product.detail()
+            "product": self.product.detail(),
         }
 
-#List of bloked tokens from authenticated users
+
+# List of bloked tokens from authenticated users
 class TokenBlockedList(db.Model):
 
-    id = db.Column(db.Integer, primary_key = True)
-    token = db.Column(db.String(1000), unique = True, nullable = False)
-    email = db.Column(db.String(200), nullable = False, index = True)
-    created_at = db.Column(db.DateTime, nullable = False)
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(1000), unique=True, nullable=False)
+    email = db.Column(db.String(200), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False)
 
     def serialize(self):
-        return {
-            "id": self.id,
-            "token": self.token,
-            "email": self.email,
-            "created_at": self.created_at
-        }
+        return {"id": self.id, "token": self.token, "email": self.email, "created_at": self.created_at}
